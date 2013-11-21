@@ -1,4 +1,3 @@
-import sys as SYS
 import numpy as NP
 import my_operations as OPS
 
@@ -18,20 +17,19 @@ def FT1D(inp, ax=-1, use_real=False, shift=False, verbose=True):
     use_real:   [Boolean scalar] If True, compute only the positive
                 frequency components using the real part of the data
 
-    Fftoututs:    
+    oututs:    
     
     fftout: FFT of input data over the specified axes
     -------------------------------------------------------------------
     """
 
-    inp = NP.asarray(inp)
-
     try:
-        isinstance(inp, NP.ndarray)
-        # type(inp) is numpy.ndarray
-    except TypeError: 
-        print 'Unable to convert to Numpy array data type'
-        sys.exit(1) # Abort execution
+        inp
+    except NameError:
+        raise NameError('inp not defined. Aborting FT1D().')
+
+    if not isinstance(inp, NP.ndarray):   # type(inp) is numpy.ndarray
+        raise TypeError('Input array should be Numpy array data type')
 
     if use_real:
         inp = NP.real(inp)
@@ -47,10 +45,10 @@ def FT1D(inp, ax=-1, use_real=False, shift=False, verbose=True):
     return fftout
 
 
-def frequencies(length, delx=1.0, shift=False, use_real=False):
+def spectral_axis(length, delx=1.0, shift=False, use_real=False):
     """
     ----------------------------------------------------------------
-    Compute frequency samples in the FFT
+    Compute spectral axis in the FFT
 
     Inputs:
 
@@ -68,7 +66,7 @@ def frequencies(length, delx=1.0, shift=False, use_real=False):
 
     Output:    
     
-    freqs: Discrete frequencies in the output FFT
+    spaxis: Discrete spectral axis in the output FFT
     ---------------------------------------------------------------
     """
     
@@ -78,16 +76,16 @@ def frequencies(length, delx=1.0, shift=False, use_real=False):
     # except: 
     #     print "length has to be a scalar positive integer."
     #     print "Aborted execution in my_DSP_modules.frequencies()"
-    #     sys.exit(1) # Abort execution
+    #     SYS.exit(1) # Abort execution
 
     if use_real:
-        freqs = NP.fft.rfftfreq(length, d=delx)
+        spaxis = NP.fft.rfftfreq(length, d=delx)
     else: 
-        freqs = NP.fft.fftfreq(length, d=delx)
+        spaxis = NP.fft.fftfreq(length, d=delx)
         if shift:
-            freqs = NP.fft.fftshift(freqs)
+            spaxis = NP.fft.fftshift(spaxis)
 
-    return freqs
+    return spaxis
 
 
 def rfft_append(inp, axis=0):
@@ -114,14 +112,22 @@ def rfft_append(inp, axis=0):
     -------------------------------------------------------------------
     """
 
-    axis = axis[0]
+    try:
+        inp
+    except NameError:
+        raise NameError('inp undefined. Aborting rfft_append()')
+
+    if not isinstance(inp, NP.ndarray):
+        raise TypeError('inp should be Numpy array data type.')
+
+    if isinstance(axis, (list, tuple, str)):
+        raise TypeError('axis should be a scalar integer in the range 0 to Ndim-1')
+    axis = int(axis)
     shp = NP.shape(inp)
     ndim = len(shp)
 
     if (axis < 0) or (axis >= ndim):
-        print "Input data does not contain the axis specified."
-        print "Aborted execution in my_operations.reverse()"
-        sys.exit(1) 
+        raise ValueError("Input data does not contain the axis specified. Aborted execution in reverse()")
 
     if shp[axis] == 1:
         return inp
@@ -148,5 +154,14 @@ def rfftfreq_append(rfft_freqs):
     ------------------------------------------------------------
     """
 
+    try:
+        rfft_freqs
+    except NameError:
+        raise NameError('Input rfft_freqs not specified. Aborting rfftfreq_append()')
+
+    if not isinstance(rfft_freqs, (list, NP.ndarray)):
+        raise TypeError('Input rfft_freqs should be a list or a 1D Numpy array')
+
     rfft_freqs = NP.asarray(rfft_freqs)
+
     return NP.append(rfft_freqs[:-1],-rfft_freqs[-1:0:-1],axis=0)
