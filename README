@@ -1,9 +1,1 @@
 Experiments in Python.
-
-helloworld.py prints "Hello world".
-
-now.py prints current date and time.
-
-fibo.py is a module to generate Fibonacci series.
-
-myrand.py is a module to generate uniform or gaussian random numbers.
