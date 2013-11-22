@@ -481,7 +481,7 @@ class AntennaArray:
         if not additions is None:
             self.add_antennas(additions)
         if not removals is None:
-            self.remove)antennas(removals)
+            self.remove_antennas(removals)
 
         self.grid()
 
